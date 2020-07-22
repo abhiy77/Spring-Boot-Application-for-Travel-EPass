@@ -8,7 +8,10 @@ $(document).ready(function() {
 function ajaxPost() {
 
 	var temp = {
-    	"emailInfo" :  $("#emailSignUp").val()
+    	"emailInfo" :  $("#emailSignUp").val(),
+    	"sourceInfo" : $("#sourceSignUp").val(),
+    	"destinationInfo" : $("#destinationSignUp").val()
+    	
     }
 
     $.ajax({
@@ -26,6 +29,9 @@ function ajaxPost() {
         console.log("data is " + data);
         	if( data[0].result == "failed"){
         	    $("#emailSignUpHelp").html("<p style='color:#FF0000'>Email already registered.. Please enter a different email</p>");
+        	}
+        	else if(data[0].result == "sourceDestMatched"){
+        		$("#sourceSignUpHelp").html("<p style='color:#FF0000'>Enter a different source or destination</p>");
         	}
         	else if(data[0].result == "add"){
         	     $("#signUpForm").unbind('submit').submit();

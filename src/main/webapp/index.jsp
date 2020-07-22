@@ -25,6 +25,14 @@
 </head>
 
 <body>
+
+	<% 
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			response.setHeader("Pragma","no-cache");
+			response.setHeader("Expires","0");
+	
+	%>
+
 	<div class="container-fluid">
 		<div class="row alert-warning">
 			<div class="col-sm-1">
@@ -112,13 +120,13 @@
 							alt="Empowering India">
 
 						<div class="carousel-caption d-block">
-							<h2>
-								eTRAVEL PASS <span class="badge badge-danger">NEW</span>
+							<h2 style="color:#FF0000">
+								<b>eTRAVEL PASS</b> <span class="badge badge-danger">NEW</span>
 							</h2>
-							<p class="d-none d-sm-block" style="">ePasses are now
+							<p class="d-none d-sm-block" style="color:#FF0000"><b>ePasses are now
 								available for travelling.. Fill all the necessary details to get
 								your ePass today.. Sign up now and provide the necessary details
-								and login to check your status</p>
+								and login to check your status</b></p>
 						</div>
 
 					</div>

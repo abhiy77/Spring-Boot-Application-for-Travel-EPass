@@ -1,27 +1,35 @@
 package com.epass.travel.service;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.epass.travel.model.Admin;
+import com.epass.travel.model.StateCovidInfo;
 import com.epass.travel.model.User;
 import com.epass.travel.repository.AppConstants;
 import com.epass.travel.repository.UserRepository;
-import com.mysql.cj.Session;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Service
 public class LoginService implements AppConstants{
+	
+	private static String covidInfo="";
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -164,6 +172,56 @@ public class LoginService implements AppConstants{
 		session.setAttribute("admin", admin);
 		List<User> userList = getPendingUsers();
 		session.setAttribute("userList", userList);
-		System.out.println(userList.size());
 	}
+	
+	public void getCovidInfo(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		
+		@SuppressWarnings("unchecked")
+		List<User> userList = (List<User>) session.getAttribute("userList");
+		StateCovidInfo[] sourceInfo = new StateCovidInfo[userList.size()];
+		StateCovidInfo[] destInfo = new StateCovidInfo[userList.size()];
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		if(covidInfo.equals("")) {
+			covidInfo = getJsonData();
+		}
+		
+		StateCovidInfo[] info = gson.fromJson(covidInfo,StateCovidInfo[].class);
+
+		int index = 0;
+		for(User user : userList) {
+			String source = user.getSource();
+			String destination = user.getDestination();
+			
+			for(int i=0;i<info.length;i++) {
+				if(info[i].getState().equalsIgnoreCase(source)) {
+					sourceInfo[index] = new StateCovidInfo();
+					sourceInfo[index].setActive(info[i].getActive());
+					sourceInfo[index].setRecovered(info[i].getRecovered());
+					sourceInfo[index].setDeaths(info[i].getDeaths());
+				}
+				else if(info[i].getState().equalsIgnoreCase(destination)){
+					destInfo[index] = new StateCovidInfo();
+					destInfo[index].setActive(info[i].getActive());
+					destInfo[index].setRecovered(info[i].getRecovered());
+					destInfo[index].setDeaths(info[i].getDeaths());
+				}
+			}
+			index++;
+		}
+
+		session.setAttribute("sourceInfo",sourceInfo);
+		session.setAttribute("destInfo", destInfo);
+	}
+	
+	public String getJsonData() {
+		String req="";
+		try {
+			req = FileUtils.readFileToString(new File("src/main/resources/response.json"), StandardCharsets.UTF_8);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return req;
+	}
+	
 }

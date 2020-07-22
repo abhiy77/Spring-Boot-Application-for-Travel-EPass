@@ -46,12 +46,18 @@ public class UserController {
 
 	@PostMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public List<AjaxObject> check(@RequestParam("emailInfo") String email) {
+	public List<AjaxObject> check(@RequestParam("emailInfo") String email
+			,@RequestParam("sourceInfo")String source,@RequestParam("destinationInfo") String destination) {
 		AjaxObject body = new AjaxObject();
 		if (signUpService.isPresent(email)) {
 			body.setResult("failed");
-		} else
+		} 
+		else if(source.equals(destination)) {
+			body.setResult("sourceDestMatched");
+		}
+		else {
 			body.setResult("add");
+		}	
 		return Arrays.asList(body);
 	}
 
@@ -86,6 +92,7 @@ public class UserController {
 			Admin admin = loginService.getAdmin(request.getParameter("emailLogin")); 
 			if(admin != null) {
 				loginService.initializeAdmin(session,admin);
+				loginService.getCovidInfo(request);
 				mv.setViewName("redirect:/admin.jsp");
 			}
 		}

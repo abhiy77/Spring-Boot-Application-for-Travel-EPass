@@ -27,6 +27,14 @@
 </head>
 
 <body>
+	<% 
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			response.setHeader("Pragma","no-cache");
+			response.setHeader("Expires","0");
+	
+	%>
+
+
 	<div class="container-fluid">
 		<div class="row alert-warning">
 			<div class="col-sm-1">
@@ -80,6 +88,14 @@
 		List<User> userList = null;
 		if(session.getAttribute("userList") != null){
 			userList = (List<User>) session.getAttribute("userList");
+		}
+		StateCovidInfo sourceInfo[] = null;
+		if(session.getAttribute("sourceInfo") != null){
+			sourceInfo = (StateCovidInfo[]) session.getAttribute("sourceInfo");
+		}
+		StateCovidInfo destInfo[] = null;
+		if(session.getAttribute("destInfo") != null){
+			destInfo = (StateCovidInfo[]) session.getAttribute("destInfo");
 		}
 	%>
 
@@ -177,8 +193,74 @@
 						
 					</div>
 					
+					<div class="form-group row">
+						<div class="col-12 text-center">
+							<h4 style="color:blue"> COVID-19 INFORMATION </h4>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<b>SOURCE</b>
+						</div>
+						<div class="col-sm-3">
+							<%=userList.get(i).getSource() %>
+						</div>
+						<div class="col-sm-3">
+							<b>DEST</b>
+						</div>
+						<div class="col-sm-3">
+							<%=userList.get(i).getDestination() %>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<b>ACTIVE CASES</b>
+						</div>
+						<div class="col-sm-3">
+							<%= sourceInfo[i].getActive() %>
+						</div>
+						<div class="col-sm-3">
+							<b>ACTIVE CASES</b>
+						</div>
+						<div class="col-sm-3">
+							<%= destInfo[i].getActive() %>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<b>RECOVERED</b>
+						</div>
+						<div class="col-sm-3">
+							<%= sourceInfo[i].getRecovered() %>
+						</div>
+						<div class="col-sm-3">
+							<b>RECOVERED</b>
+						</div>
+						<div class="col-sm-3">
+							<%= destInfo[i].getRecovered() %>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-3">
+							<b>DEATHS</b>
+						</div>
+						<div class="col-sm-3">
+							<%=sourceInfo[i].getDeaths() %>
+						</div>
+						<div class="col-sm-3">
+							<b>DEATHS</b>
+						</div>
+						<div class="col-sm-3">
+							<%= destInfo[i].getDeaths() %>
+						</div>
+					</div>
+					
 					<br>
-					<form action ="/request" method ="get">
+					<form action ="/request" method ="get" CLASS="text-center">
 					<input type="submit" class="card-link btn btn-success" name="accept<%=i%>" value="ACCEPT"> 
 					<input type="submit"
 						class="card-link btn btn-danger" name="reject<%=i%>" value="REJECT">
@@ -190,8 +272,6 @@
 			<% } }%>
 			
 		</div>
-
-
 	</div>
 
 	<br>
